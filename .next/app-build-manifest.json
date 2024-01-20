@@ -3,6 +3,7 @@
     "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
+      "static/css/app/page.css",
       "static/chunks/app/page.js"
     ],
     "/layout": [
@@ -11,10 +12,11 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/(auth)/sign-in/page": [
+    "/product/[productId]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(auth)/sign-in/page.js"
+      "static/css/app/product/[productId]/page.css",
+      "static/chunks/app/product/[productId]/page.js"
     ]
   }
 }

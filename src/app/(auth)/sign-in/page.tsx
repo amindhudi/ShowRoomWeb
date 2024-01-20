@@ -48,6 +48,7 @@ const {mutate : signIn,isLoading} = trpc.auth.signIn.useMutation({
     }
 
     router.push('/')
+    router.refresh()
   },
   onError:(err)=>{
     if(err.data?.code==='UNAUTHORIZED'){
