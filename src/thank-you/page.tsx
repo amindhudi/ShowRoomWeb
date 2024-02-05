@@ -4,7 +4,10 @@ import { getServerSideUser } from '@/lib/payload-utils'
 import { getPayloadClient } from '@/get-payload'
 import { notFound, redirect } from 'next/navigation'
 import { PRODUCT_CATEGORIES } from '@/components/config'
-import { Product, ProductFile } from '@/payload-types'
+import { Product, ProductFile, User } from '@/payload-types'
+import { formatPrice } from '@/lib/utils'
+import Link from 'next/link'
+import PaymentStatus from '@/components/PaymentStatus'
 
 
 interface PageProps{
@@ -43,6 +46,11 @@ const ThankYouPage = async ({searchParams}: PageProps)=>{
             `/sign-in?origin=thank-you?orderId=${order.id}`
         )
     }
+ const products = order.products as Product[]
+ const orderTotal = products.reduce((total, product)=>{
+    return total + product.price
+ }, 0)
+
 
 return (
 <main className="relative lg:min-h-full">
@@ -116,11 +124,71 @@ we&apos;ll send you confirmation very soon!
     }
 
 </div>
+
+  <div className='flex-auto flex flex-col justify-between'>
+   <div className='space-y-1'>
+   <h3 className='text-gray-900'>
+    {product.name}
+    </h3>
+    <p className='my-1'>
+    Category: {label}
+    </p>
+   </div>
+   {order._isPaid ?(
+    <a
+    href={downloadUrl}
+    download={product.name}
+    className='text-blue-600 hover:underline underline-offset-2'
+    >
+    Download asset
+    </a>
+   ):null}
+
+  </div>
+
+  <p className='flex-none font-medium text-gray-900'>
+   {formatPrice(product.price)}
+  </p>
+
        </li>
 
     )
    })}
   </ul>
+  <div className='space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-muted-foreground'>
+   <div className='flex justify-between'>
+    <p>Subtotal</p>
+    <p className='text-gray-900'>{formatPrice(orderTotal)}</p>
+   </div>
+   <div className='flex justify-between'>
+    <p>Transaction Fee</p>
+    <p className='text-gray-900'>{formatPrice(1)}</p>
+   </div>
+
+<div className='flex items-center justify-between border-t border-gray-200 pt-6 text-gray-900'>
+<p className="text-base">
+Total
+</p>
+<p className='text-base'>
+    {formatPrice(orderTotal + 1)}
+</p>
+</div>
+  </div>
+
+   <PaymentStatus 
+   isPaid={order._isPaid} 
+   orderEmail={(order.user as User).email} 
+   orderId={order.id}
+   />
+
+  <div className='mt-16 border-t border-gray-200 py-6 text-right'>
+   <Link 
+   href='/products'
+   className='text-sm font-medium text-blue-600 hover:text-blue-500'
+   >
+    Continue shoping &rarr;
+   </Link>
+  </div>
   </div>
  </div>
 </div>
