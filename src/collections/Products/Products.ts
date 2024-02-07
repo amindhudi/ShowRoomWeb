@@ -1,8 +1,8 @@
 
 import { PRODUCT_CATEGORIES } from "../../components/config";
-import { CollectionConfig } from "payload/types";
+import { Access, CollectionConfig } from "payload/types";
 import { BeforeChangeHook, AfterChangeHook } from "payload/dist/collections/config/types";
-import { Product } from "../../payload-types";
+import { Product, User } from "../../payload-types";
 import { stripe } from "../../lib/stripe";
 
 const addUser : BeforeChangeHook<Product>= async ({req, data})=>{
@@ -46,13 +46,42 @@ if(fullUser && typeof fullUser==='object'){
 }
 }
 
+const isAdminOrHasAccess =():Access =>({req:{user:_user}})=>{
+    const user =_user as User | undefined
+    if(!user) return false
+    if(user.role ==='admin') return true
+
+    const userProductIDs =(user.products || []).reduce<Array<string>>((acc, product)=>{
+        if(!product) return acc
+        if(typeof product === "string"){
+            acc.push(product)
+        }
+        else{
+            acc.push(product.id)
+        }
+        return acc
+    }, [])
+
+    return {
+        id:{
+            in:userProductIDs
+        }
+    }
+    
+}
+
 export const Products:CollectionConfig={
     slug:'products',
     admin:{
         useAsTitle:'name'
     }, 
-    access:{},
+    access:{
+    read:isAdminOrHasAccess(),
+    update:isAdminOrHasAccess(),
+    delete:isAdminOrHasAccess(),
+    },
     hooks:{
+        afterChange:[syncUser],
     beforeChange:[
         addUser, async (args)=>{
 if(args.operation ==='create'){
