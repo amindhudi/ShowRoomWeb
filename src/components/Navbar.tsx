@@ -63,6 +63,18 @@ const Navbar = async () => {
                     </Link>
                   )}
 
+                   {user ? (
+                    <UserAccountNav user={user} />
+                  ) : (
+                    <Link
+                      href='/sign-up'
+                      className={buttonVariants({
+                        variant: 'ghost',
+                      })}>
+                      Test
+                    </Link>
+                  )}
+
                   {user ? (
                     <span
                       className='h-6 w-px bg-gray-200'
@@ -82,6 +94,7 @@ const Navbar = async () => {
                   <div className='ml-4 flow-root lg:ml-6'>
                     <Cart />
                   </div>
+
                 </div>
               </div>
             </div>
