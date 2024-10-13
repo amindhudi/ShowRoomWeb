@@ -6,7 +6,8 @@ const handler =(req:Request)=>{
         req,
         router : appRouter,
         
-        createContext:()=>({}),
+       // @ts-ignore
+      createContext: () => ({})
     })
 }
 
